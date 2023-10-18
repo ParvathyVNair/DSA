@@ -1,0 +1,57 @@
+#include <stdio.h>
+#define INF 9999 // assume this is the maximum weight of any edge
+
+void prim(int n, int graph[n][n]) {
+    int i, j, k;
+    int visited[n], parent[n], min_dist, min_vertex;
+
+    // set initial values
+    for (i = 0; i < n; i++) {
+        visited[i] = 0; // no node has been visited yet
+        parent[i] = -1; // no node has a parent yet
+    }
+    visited[0] = 1; // start at node 0
+
+    // find the minimum spanning tree
+    for (i = 0; i < n - 1; i++) {
+        min_dist = INF;
+        for (j = 0; j < n; j++) { // check every node
+            if (visited[j]) { // check only visited nodes
+                for (k = 0; k < n; k++) { // check every edge
+                    if (!visited[k] && graph[j][k] < min_dist) { // check only unvisited nodes and choose the one with the lowest weight
+                        min_dist = graph[j][k];
+                        min_vertex = k; // set the new vertex to be visited
+                        parent[k] = j; // set the new parent
+                    }
+                }
+            }
+        }
+        visited[min_vertex] = 1; // visit the new vertex
+    }
+
+    // output the minimum spanning tree
+    printf("Edge   Weight\n");
+    for (i = 1; i < n; i++) { // start at node 1 since node 0 has no parent
+        printf("%d - %d    %d\n", parent[i], i, graph[parent[i]][i]);
+    }
+}
+
+int main() {
+    int n, i, j;
+
+    printf("Enter the number of nodes: ");
+    scanf("%d", &n);
+
+    int graph[n][n];
+
+    printf("Enter the adjacency matrix:\n");
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    prim(n, graph);
+
+    return 0;
+}
