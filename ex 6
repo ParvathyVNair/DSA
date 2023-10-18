@@ -1,0 +1,209 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define a structure for the doubly linked list node
+struct node {
+    int data;
+    struct node* prev;
+    struct node* next;
+};
+
+// Define a structure for the doubly linked list
+struct linked_list {
+    struct node* head;
+    struct node* tail;
+};
+
+// Initialize the doubly linked list
+void init_list(struct linked_list* list) {
+    list->head = NULL;
+    list->tail = NULL;
+}
+
+// Insert a node at the head of the list
+void insert_head(struct linked_list* list, int data) {
+    // Allocate memory for a new node
+    struct node* new_node = (struct node*)malloc(sizeof(struct node));
+
+    if (new_node == NULL) {
+        printf("Error: Out of memory\n");
+        exit(1);
+    }
+
+    // Set the data and pointers of the new node
+    new_node->data = data;
+    new_node->prev = NULL;
+    new_node->next = list->head;
+
+    if (list->head == NULL) {
+        // If the list is empty, set the tail pointer as well
+        list->tail = new_node;
+    }
+    else {
+        // If the list is not empty, update the previous pointer of the head node
+        list->head->prev = new_node;
+    }
+
+    // Update the head pointer of the list
+    list->head = new_node;
+}
+
+// Insert a node at the tail of the list
+void insert_tail(struct linked_list* list, int data) {
+    // Allocate memory for a new node
+    struct node* new_node = (struct node*)malloc(sizeof(struct node));
+
+    if (new_node == NULL) {
+        printf("Error: Out of memory\n");
+        exit(1);
+    }
+
+    // Set the data and pointers of the new node
+    new_node->data = data;
+    new_node->next = NULL;
+    new_node->prev = list->tail;
+
+    if (list->tail == NULL) {
+        // If the list is empty, set the head pointer as well
+        list->head = new_node;
+    }
+    else {
+        // If the list is not empty, update the next pointer of the tail node
+        list->tail->next = new_node;
+    }
+
+    // Update the tail pointer of the list
+    list->tail = new_node;
+}
+
+// Insert a node after a given node
+void insert_after(struct node* prev_node, int data) {
+    if (prev_node == NULL) {
+        printf("Error: Previous node is NULL\n");
+        exit(1);
+    }
+
+    // Allocate memory for a new node
+    struct node* new_node = (struct node*)malloc(sizeof(struct node));
+
+    if (new_node == NULL) {
+        printf("Error: Out of memory\n");
+        exit(1);
+    }
+
+    // Set the data and pointers of the new node
+    new_node->data = data;
+    new_node->prev = prev_node;
+    new_node->next = prev_node->next;
+
+    if (prev_node->next == NULL) {
+        // If the given node is the tail of the list, update the tail pointer as well
+        prev_node->next = new_node;
+        prev_node->tail = new_node;
+    }
+    else {
+        // If the given node is not the tail of the list, update the previous pointer of the next node
+        prev_node->next->prev = new_node;
+        prev_node->next = new_node;
+    }
+}
+
+// Delete a node from the list
+void delete_node(struct linked_list* list, struct node* node) {
+    if (node == NULL) {
+        printf("Error: Node is NULL\n");
+        exit(1);
+    }
+
+    if (node->prev == NULL) {
+        // If the node is the head of the list, update the head pointer as well
+        list->head = node->next;
+    }
+    else {
+        // If the node is not the head of the list, update the next pointer of the previous node
+        node->prev->next = node->next;
+    }
+
+    if (node->next == NULL) {
+        // If the node is the tail of the list, update the tail pointer as well
+        list->tail = node->prev;
+    }
+    else {
+        // If the node is not the tail of the list, update the previous pointer of the next node
+        node->next->prev = node->prev;
+    }
+
+    // Free the memory of the deleted node
+    free(node);
+}
+
+// Reverse the list
+void reverse(struct linked_list* list) {
+    struct node* temp = NULL;
+    struct node* cur_node = list->head;
+
+    while (cur_node != NULL) {
+        temp = cur_node->prev;
+        cur_node->prev = cur_node->next;
+        cur_node->next = temp;
+        cur_node = cur_node->prev;
+    }
+
+    if (temp != NULL) {
+        list->head = temp->prev;
+    }
+}
+
+// Print the elements of the list
+void print_list(struct linked_list* list) {
+    printf("List: ");
+
+    if (list->head == NULL) {
+        printf("Empty\n");
+        return;
+    }
+
+    struct node* cur_node = list->head;
+
+    while (cur_node != NULL) {
+        printf("%d ", cur_node->data);
+        cur_node = cur_node->next;
+    }
+
+    printf("\n");
+}
+
+int main() {
+    // Initialize a doubly linked list
+    struct linked_list list;
+    init_list(&list);
+
+    // Insert some nodes into the list
+    insert_tail(&list, 1);
+    insert_tail(&list, 2);
+    insert_tail(&list, 3);
+    insert_head(&list, 0);
+
+    // Print the list
+    print_list(&list);
+
+    // Delete the second node
+    delete_node(&list, list.head->next->next);
+
+    // Print the list
+    print_list(&list);
+
+    // Insert a node after the first node
+    insert_after(list.head, 4);
+
+    // Print the list
+    print_list(&list);
+
+    // Reverse the list
+    reverse(&list);
+
+    // Print the list
+    print_list(&list);
+
+    return 0;
+}
