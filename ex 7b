@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define a structure for the stack node
+struct node {
+    int data;
+    struct node* next;
+};
+
+// Define a structure for the stack
+struct stack {
+    struct node* top;
+};
+
+// Initialize the stack
+void init_stack(struct stack* s) {
+    s->top = NULL;
+}
+
+// Push an element onto the stack
+void push(struct stack* s, int data) {
+    // Allocate memory for a new node
+    struct node* new_node = (struct node*)malloc(sizeof(struct node));
+
+    if (new_node == NULL) {
+        printf("Error: Out of memory\n");
+        exit(1);
+    }
+
+    // Set the data and next pointer of the new node
+    new_node->data = data;
+    new_node->next = s->top;
+
+    // Update the top pointer of the stack
+    s->top = new_node;
+}
+
+// Pop an element from the stack
+int pop(struct stack* s) {
+    if (s->top == NULL) {
+        printf("Error: Stack is empty\n");
+        exit(1);
+    }
+
+    // Save the data from the top node
+    int data = s->top->data;
+
+    // Update the top pointer of the stack
+    struct node* temp = s->top;
+    s->top = s->top->next;
+
+    // Free the memory of the popped node
+    free(temp);
+
+    // Return the popped data
+    return data;
+}
+
+// Check if the stack is empty
+int is_empty(struct stack* s) {
+    return s->top == NULL;
+}
+
+// Get the top element of the stack
+int get_top(struct stack* s) {
+    if (s->top == NULL) {
+        printf("Error: Stack is empty\n");
+        exit(1);
+    }
+
+    return s->top->data;
+}
+
+// Print the elements of the stack
+void print_stack(struct stack* s) {
+    printf("Stack: ");
+
+    if (s->top == NULL) {
+        printf("Empty\n");
+        return;
+    }
+
+    struct node* cur_node = s->top;
+
+    while (cur_node != NULL) {
+        printf("%d ", cur_node->data);
+        cur_node = cur_node->next;
+    }
+
+    printf("\n");
+}
+
+int main() {
+    // Initialize a stack
+    struct stack s;
+    init_stack(&s);
+
+    // Push some elements onto the stack
+    push(&s, 1);
+    push(&s, 2);
+    push(&s, 3);
+
+    // Print the stack
+    print_stack(&s);
+
+    // Pop an element from the stack
+    printf("Popped element: %d\n", pop(&s));
+
+    // Get the top element of the stack
+    printf("Top element: %d\n", get_top(&s));
+
+    // Check if the stack is empty
+    printf("Is stack empty? %s\n", is_empty(&s) ? "Yes" : "No");
+
+    // Print the stack
+    print_stack(&s);
+
+    return 0;
+}
