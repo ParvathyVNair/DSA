@@ -1,0 +1,104 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+// Define the structure of a single node in the queue
+struct node {
+    int data; // Data stored in the node
+    struct node *next; // Pointer to the next node
+};
+
+struct node *front = NULL; // Pointer to the front end of the queue
+struct node *rear = NULL; // Pointer to the rear end of the queue
+
+// Function to check if the queue is empty
+int isEmpty() {
+    if(front == NULL && rear == NULL) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+// Function to insert element into the queue at the rear end
+void enqueue(int item) {
+    struct node *newNode = (struct node*) malloc(sizeof(struct node)); // Create a new node
+    newNode->data = item; // Set the data of the new node
+    newNode->next = NULL; // Set the next pointer of the new node to NULL
+    if(isEmpty()) { // If the queue is empty, set both front and rear pointers to the new node
+        front = rear = newNode;
+    }
+    else { // If the queue is not empty, add the new node at the rear end and update the rear pointer
+        rear->next = newNode;
+        rear = newNode;
+    }
+    printf("Enqueued %d\n", item);
+}
+
+// Function to remove element from the queue from the front end
+void dequeue() {
+    int item;
+    struct node *temp; // Temporary pointer to point to the node to be dequeued
+    if(isEmpty()) { // If the queue is empty, display an appropriate message
+        printf("Queue is empty. Cannot dequeue.\n");
+    }
+    else {
+        temp = front; // Point temp to the front node
+        item = temp->data; // Get the data of the front node
+        if(front == rear) { // If there is only one node in the queue, set both front and rear pointers to NULL
+            front = rear = NULL;
+        }
+        else { // If there are more than one node in the queue, remove the front node and update the front pointer
+            front = front->next;
+        }
+        free(temp); // Free the memory occupied by the front node
+        printf("Dequeued %d\n", item);
+    }
+}
+
+// Function to display the elements of the queue
+void display() {
+    struct node *temp;
+    if(isEmpty()) { // If the queue is empty, display an appropriate message
+        printf("Queue is empty\n");
+    }
+    else { // If the queue is not empty, traverse the queue and display all the elements
+        printf("Elements of queue are: ");
+        temp = front;
+        while(temp != NULL) {
+            printf("%d ", temp->data);
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+}
+
+// Main function to test the queue operations
+int main() {
+    int choice, item;
+    printf("Queue implementation using linked list\n");
+    while(1) {
+        printf("1. Enqueue\n2. Dequeue\n3. Display\n4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch(choice) {
+            case 1:
+                printf("Enter element to insert: ");
+                scanf("%d", &item);
+                enqueue(item);
+                break;
+            case 2:
+                dequeue();
+                break;
+            case 3:
+                display();
+                break;
+            case 4:
+                printf("Exiting the program\n");
+                return 0;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+    return 0;
+}
