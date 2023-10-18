@@ -1,0 +1,191 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+typedef struct node
+{
+    int keys[MAX];
+    int count;
+    struct node *children[MAX + 1];
+} node;
+
+node *createNode(int t)
+{
+    node *newNode = (node *)malloc(sizeof(node));
+    newNode->count = 0;
+    newNode->children[0] = NULL;
+    return newNode;
+}
+
+int isLeaf(node *n)
+{
+    if (n == NULL)
+        return 0;
+    if (n->children[0] == NULL)
+        return 1;
+    return 0;
+}
+
+int getMaximumKeys(int t)
+{
+    return t - 1;
+}
+
+int getMinimumKeys(int t)
+{
+    return t / 2;
+}
+
+int insert(node *root, int key)
+{
+    int i = 0;
+    node *child = NULL;
+
+    if (root == NULL)
+    {
+        root = createNode(MAX);
+        root->keys[0] = key;
+        root->count = 1;
+        return 1;
+    }
+
+    if (root->count == getMaximumKeys(MAX))
+    {
+        node *newRoot = createNode(MAX);
+        newRoot->children[0] = root;
+        newRoot->keys[0] = root->keys[0];
+        newRoot->count = 1;
+        splitChild(newRoot, 0, root);
+        insertNonFull(newRoot, key);
+        return 1;
+    }
+
+    for (i = root->count - 1; i >= 0 && key < root->keys[i]; i--)
+        root->keys[i + 1] = root->keys[i];
+
+    root->keys[i + 1] = key;
+    root->count += 1;
+
+    return 1;
+}
+
+void splitChild(node *root, int index, node *child)
+{
+    int i, j, middle, middleKey;
+    node *newChild = createNode(MAX);
+
+    middle = getMinimumKeys(MAX);
+    middleKey = child->keys[middle];
+
+    newChild->count = getMaximumKeys(MAX) - middle;
+    for (i = 0, j = middle + 1; i < newChild->count; i++, j++)
+        newChild->keys[i] = child->keys[j];
+
+    if (!isLeaf(child))
+    {
+        for (i = 0, j = middle + 1; i <= newChild->count; i++, j++)
+            newChild->children[i] = child->children[j];
+    }
+
+    child->count = middle;
+
+    for (i = root->count; i >= index + 1; i--)
+        root->children[i + 1] = root->children[i];
+
+    root->children[index + 1] = newChild;
+
+    for (i = root->count - 1; i >= index; i--)
+        root->keys[i + 1] = root->keys[i];
+
+    root->keys[index] = middleKey;
+    root->count += 1;
+}
+
+void insertNonFull(node *root, int key)
+{
+    int i = 0;
+    int pos = 0;
+
+    if (isLeaf(root))
+    {
+        i = root->count - 1;
+        while (i >= 0 && key < root->keys[i])
+        {
+            root->keys[i + 1] = root->keys[i];
+            i--;
+        }
+        root->keys[i + 1] = key;
+        root->count += 1;
+        return;
+    }
+
+    while (i < root->count)
+    {
+        if (i == root->count - 1 || i == 0)
+            break;
+        if (key < root->keys[i])
+        {
+            pos = i;
+            break;
+        }
+        if (key >= root->keys[i + 1])
+        {
+            pos = i + 1;
+            break;
+        }
+        i++;
+    }
+
+    if (root->children[pos]->count == getMaximumKeys(MAX))
+    {
+        splitChild(root, pos, root->children[pos]);
+        if (key > root->keys[pos])
+            pos++;
+    }
+    insertNonFull(root->children[pos], key);
+}
+
+void inOrderTraversal(node *root)
+{
+    int i = 0;
+    if (root == NULL)
+        return;
+
+    for (i = 0; i < root->count; i++)
+    {
+        if (isLeaf(root->children[i]))
+        {
+            for (int j = 0; j < root->children[i]->count; j++)
+                printf("%d ", root->children[i]->keys[j]);
+        }
+        else
+            inOrderTraversal(root->children[i]);
+
+        if (root->keys[i] != INT_MAX)
+            printf("%d ", root->keys[i]);
+    }
+
+    if (isLeaf(root->children[i]))
+    {
+        for (int j = 0; j < root->children[i]->count; j++)
+            printf("%d ", root->children[i]->keys[j]);
+    }
+    else
+        inOrderTraversal(root->children[i]);
+}
+
+int main()
+{
+    node *root = createNode(MAX);
+    int keys[] = {5, 9, 12, 15, 18, 20, 22, 25, 30, 35, 40, 45, 50};
+    int length = sizeof(keys) / sizeof(keys[0]);
+
+    for (int i = 0; i < length; i++)
+        insert(root, keys[i]);
+
+    inOrderTraversal(root);
+    printf("\n");
+
+    return 0;
+}
