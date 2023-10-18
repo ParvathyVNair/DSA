@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+
+// define the structure of a student
+typedef struct {
+    int id;
+    char name[100];
+    float marks;
+} Student;
+
+// function to read student details
+void readStudentDetails(Student *student) {
+    printf("Enter Student Details\n");
+    printf("Enter Student id: ");
+    scanf("%d", &student->id);
+
+    printf("Enter Student name: ");
+    scanf("%s", &student->name);
+
+    printf("Enter Student marks: ");
+    scanf("%f", &student->marks);
+}
+
+// function to display student details
+void displayStudentDetails(Student *student) {
+    printf("Student Details\n");
+    printf("Student id: %d\n", student->id);
+    printf("Student name: %s\n", student->name);
+    printf("Student marks: %.2f\n", student->marks);
+}
+
+int main() {
+    // create a student
+    Student student;
+
+    // read student details
+    readStudentDetails(&student);
+
+    // display student details
+    displayStudentDetails(&student);
+
+    return 0;
+}
