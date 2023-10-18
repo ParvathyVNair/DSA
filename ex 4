@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    int next;
+} Node;
+
+Node *createLinkedList(int *arr, int size) {
+    Node *linkedList = (Node *) malloc(size * sizeof(Node));
+
+    for (int i = 0; i < size; i++) {
+        linkedList[i].data = arr[i];
+        linkedList[i].next = i + 1;
+    }
+
+    linkedList[size - 1].next = -1;
+    return linkedList;
+}
+
+void printLinkedList(Node *linkedList) {
+    int i = 0;
+    while (linkedList[i].next != -1) {
+        printf("%d -> ", linkedList[i].data);
+        i = linkedList[i].next;
+    }
+
+    printf("%d\n", linkedList[i].data);
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int size = sizeof(arr) / sizeof(arr[0]);
+
+    Node *linkedList = createLinkedList(arr, size);
+    printLinkedList(linkedList);
+
+    free(linkedList);
+    return 0;
+}
